@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "crafty-ring-258814",
+  "private_key_id": "5d5bb8f14fa1d4a71e15aecd0607ef0a5eb30be6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQC5fC1A+X4pAV4a\nNbBk2rFBVXU77oXHk1YJ5UzPoryrthBbLBTNrRw+kf2MR42j5t2v/SWrOPANi3Hs\n/gyhErVCV/BfjgxDAiCoZyWtVs7krey9ZlizH2uQlWjopfwlsm4eoTrF6PHBRnMK\nv/Guvtj11u4ZQ8lllUf+MpRiBFPOuuoRb4Sv+31Uf83xq1PQrISIM8aZ8SAOvFjY\nYBECZIe8kqfIWwR3czHzAHATiUpVevTI/JA5CERYvvB7yfUaWlQi41K+dV/rkKac\n/e1aY3YfCma8G4VKj7zshVSDXF8C3jSksoP+avzGQNhmXMmBH17Q7+mUHpU8ex5H\nPcQ4Z0BnAgMBAAECgf8nUlO2SZIW2MYlpQM69rR9Rj7GPgk4f/3nhPWzu9wc06l+\ndQvxs+ELiWXRq4BKZ82hqU0unomRob+gb2wHXW0Yz8//9v1GTzvyeb3s2Y7ObrkM\ngTsAXp113yf5GQvaskmwRI3FCbmOMgz5p6dvLrj0XRFSSdOuvnLugJUIzTCOdi4n\njIJCJdnH0yjpeDdguLfAka4fUbHGCUEDjwzHrjivF5IV0GDxF25caLeGxstqh3Ol\nkMPWPKzxisO0/I31BQ3VQOsvQLuBEzGm6hYTXpXBGN0wdsLz3F9SI14xPfGIVGVV\neaKgMwA8CLCldRRnzpPdTBp/DV+fADNezU8zRAkCgYEA+C1xh7jtgkgHOJ4bhdFC\nRagHS5NbCQUSxBBI6RwxK/EtBisjONXlFpmkwGyuG//8z/mOyC2vSL1N7qifLUmC\nc8avqQHhAeFeEqlqPhtAG5oPNU6xP5LDrUUszX1xSYJTfOjHhB/WIotw1OijZbBx\nV1vNVgQ5IyzsHqOOXZGw42MCgYEAv1TdZ2O9p0al6u4ESYy3eAiqjmf93rrDqDs7\nOoLXZpHxRW9F4DewB6rIy+bhwkZGn6FvUcV2eVcpAg4JUwPDHFfGE+O6pFkttl0Q\nNnP1PRv1h7Vu8t8a8vSf5EmWaq0aaYeHH1f43/uQuIUkcv2eIj/IeX3IKfk/YHcE\nj6BqGC0CgYBVdhCqVBw1yOfzrz57Dlxr8DjS5aNrr7uOmK0C2Rp1r0952FEAuWdy\nKOZ6/PHX4ocEd0Ob21+JBOdZT+fAiJfLlpfW8zawlxL2CjDzwh6JYrvp93dCFSAd\nAr0y5gek8KQfV2mdLflnW+025AWgduoQ0yQagsnKOyX0Rw43Wnw3UQKBgF62aetW\nSnnV1ShYrrKh/+hhkdxwyhFJrrVGrOkn/+z8bc0LajG2H2OMPV4Cats64pb+2RZH\ng4BJjzk/LYp0oE8VfC44WxokMybFJtNtz4ZyoraNL+D2ZGbEhaoCa31fN2Xp+w+f\nAsoNw/QzpHlv5qnZnSnXBBETGzZrdEyNAjf5AoGBAMPl8a2vFsA3qAGpF6KcVw6t\nV2xxwFbqqiUnCDvtgTl0EwZxmPmEJqLd5v4xEQTwUHx67PkIUkACwZwI4hBA7gWE\nfxBL+E36yoW1ffsDK4CQtJacnRTNmhX5WHazGSGU+Fz4IoFbCTQs4Ql8MCOEb2JP\nGiIYdz/jL54Y0ZwN0Ii+\n-----END PRIVATE KEY-----\n",
+  "client_email": "don-le@crafty-ring-258814.iam.gserviceaccount.com",
+  "client_id": "116824725508325316090",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/don-le%40crafty-ring-258814.iam.gserviceaccount.com"
+}
