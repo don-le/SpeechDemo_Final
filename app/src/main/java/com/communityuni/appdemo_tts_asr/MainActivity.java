@@ -1,6 +1,7 @@
 package com.communityuni.appdemo_tts_asr;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -24,12 +25,12 @@ import androidx.core.app.ActivityCompat;
 
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Menu;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -47,52 +48,47 @@ import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements MessageDialogFragment.Listener{
-    ImageView imgSpeech;
+public class MainActivity extends AppCompatActivity {
     EditText edtText;
-    //private static ArrayList<String> results;
+    Button btnChay;
     private static final String FRAGMENT_MESSAGE_DIALOG = "message_dialog";
+
     private static final String STATE_RESULTS = "results";
+
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 1;
+
     private SpeechService mSpeechService;
+
     private VoiceRecoder mVoiceRecorder;
-
-
-    private ResultAdapter mAdapter;
-
     private final VoiceRecoder.Callback mVoiceCallback = new VoiceRecoder.Callback() {
+
         @Override
         public void onVoiceStart() {
             showStatus(true);
             if (mSpeechService != null) {
                 mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
-                // định cấu hình cho GoogleAPI
             }
         }
+
         @Override
         public void onVoice(byte[] data, int size) {
             if (mSpeechService != null) {
-                // Call the streaming recognition API
                 mSpeechService.recognize(data, size);
-                /**
-                 * nhận dạng âm thanh lời nói, phương thức này được gọi mỗi khi đoạn
-                 * đệm byte được sẵn sàng
-                 * data là dữ liệu âm thanh
-                 * size là số lượng phần tử có liên quan
-                 */
             }
         }
+
         @Override
         public void onVoiceEnd() {
             showStatus(false);
             if (mSpeechService != null) {
                 mSpeechService.finishRecognizing();
-                // kết thúc nhận dạng âm thanh giọng nói
             }
         }
 
     };
+    private ResultAdapter mAdapter;
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
+
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder binder) {
             mSpeechService = SpeechService.from(binder);
@@ -106,8 +102,68 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
         }
 
     };
+    Bundle bundle= new Bundle();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        bundle=savedInstanceState;
+        edtText=findViewById(R.id.edtText);
+        btnChay= findViewById(R.id.btnChayj);
+        btnChay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    StartRecognize();
+                    final Resources resources = getResources();
+                    final Resources.Theme theme = getTheme();
+                    mColorHearing = ResourcesCompat.getColor(resources, R.color.status_hearing, theme);
+                    mColorNotHearing = ResourcesCompat.getColor(resources, R.color.status_not_hearing, theme);
+
+                    final ArrayList<String> results =bundle == null ? null :
+                            bundle.getStringArrayList(STATE_RESULTS);
+                    mAdapter = new ResultAdapter(results);
+                    //edtText.setText(results.toString());
+                }
+                catch (Exception ex){}
+            }
+        });
 
 
+    }
+
+    private void StartRecognize(){
+        // Prepare Cloud Speech API
+        bindService(new Intent(this, SpeechService.class), mServiceConnection, BIND_AUTO_CREATE);
+
+        // Start listening to voices
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED) {
+            startVoiceRecorder();
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.RECORD_AUDIO)) {
+            showPermissionMessageDialog();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
+                    REQUEST_RECORD_AUDIO_PERMISSION);
+        }
+    }
+    private void StopRecognize(){
+        // Stop listening to voice
+        stopVoiceRecorder();
+
+        // Stop Cloud Speech API
+        mSpeechService.removeListener(mSpeechServiceListener);
+        unbindService(mServiceConnection);
+        mSpeechService = null;
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mAdapter != null) {
+            outState.putStringArrayList(STATE_RESULTS, mAdapter.getResults());
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -123,13 +179,7 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mAdapter != null) {
-            outState.putStringArrayList(STATE_RESULTS, mAdapter.getResults());
-        }
-    }
+
     private void startVoiceRecorder() {
         if (mVoiceRecorder != null) {
             mVoiceRecorder.stop();
@@ -137,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
         mVoiceRecorder = new VoiceRecoder(mVoiceCallback);
         mVoiceRecorder.start();
     }
+
     private void stopVoiceRecorder() {
         if (mVoiceRecorder != null) {
             mVoiceRecorder.stop();
@@ -149,58 +200,58 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
                 .newInstance(getString(R.string.permission_message))
                 .show(getSupportFragmentManager(), FRAGMENT_MESSAGE_DIALOG);
     }
+    private int mColorHearing;
+    private int mColorNotHearing;
 
     private void showStatus(final boolean hearingVoice) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(hearingVoice==true)
-                {
-                    Toast.makeText(MainActivity.this,"Listening...",Toast.LENGTH_LONG).show();
+                if(hearingVoice==true){
+                    btnChay.setText("Listening...");
+                    btnChay.setTextColor(mColorHearing);
                 }
-                else if(hearingVoice==false)
+                else
                 {
-                    Toast.makeText(MainActivity.this,"Stop listening!",Toast.LENGTH_LONG).show();
+                    btnChay.setText("Stop listening");
+                    btnChay.setTextColor(mColorNotHearing);
                 }
-
             }
         });
     }
-
-
     public void onMessageDialogDismissed() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                 REQUEST_RECORD_AUDIO_PERMISSION);
     }
 
-    /**
-     * được gọi khi một đoạn văn bản mới được Google API nhận ra
-     *
-     * @param text    văn bản
-     * @param isFinal {@code true} khi Google API xử lý xong âm thanh .
-     */
-    private final SpeechService.Listener mSpeechServiceListener = new SpeechService.Listener() {
-        @Override
-        public void onSpeechRecognized(final String text, final boolean isFinal) {
-            if (isFinal) {
-                mVoiceRecorder.dismiss();
-            }
-            if (edtText != null && !TextUtils.isEmpty(text)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isFinal) {
-                            edtText.setText(null);
-                            mAdapter.addResult(text);
-                        } else {
-                            edtText.setText(text);
-                        }
+    private final SpeechService.Listener mSpeechServiceListener =
+            new SpeechService.Listener() {
+                @Override
+                public void onSpeechRecognized(final String text, final boolean isFinal) {
+                    if (isFinal) {
+                        mVoiceRecorder.dismiss();
                     }
-                });
-            }
-        }
-    };
-    // để nguyên lớp này
+                    if (edtText != null && !TextUtils.isEmpty(text)) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isFinal) {
+                                    edtText.setText(null);
+                                    mAdapter.addResult(text);
+                                    //gọi StopRecognize()
+                                    StopRecognize();
+                                } else {
+                                    edtText.setText(text);
+
+                                }
+                            }
+                        });
+
+                    }
+
+                }
+            };
+
     private static class ResultAdapter {
 
         private final ArrayList<String> mResults = new ArrayList<>();
@@ -210,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
                 mResults.addAll(results);
             }
         }
+
         void addResult(String result) {
             mResults.add(0, result);
         }
@@ -218,90 +270,5 @@ public class MainActivity extends AppCompatActivity implements MessageDialogFrag
             return mResults;
         }
 
-    }
-
-
-    public Intent intent= new Intent(MainActivity.this,SpeechService.class);
-    private void addEvents() {
-        imgSpeech.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Speak();
-            }
-        });
-    }
-
-    ArrayList<String> results;
-    void Speak()
-    {
-
-        try {
-
-            Toast.makeText(MainActivity.this,"Listening...",Toast.LENGTH_LONG).show();
-            // Prepare Cloud Speech API
-            bindService(intent, mServiceConnection, BIND_AUTO_CREATE);
-            Toast.makeText(MainActivity.this,"đã kết nối",Toast.LENGTH_SHORT).show();
-            // Start listening to voices
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                    == PackageManager.PERMISSION_GRANTED) {
-                startVoiceRecorder();
-                Toast.makeText(MainActivity.this,"Bắt đầu nghe",Toast.LENGTH_SHORT).show();
-            } else if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.RECORD_AUDIO)) {
-                showPermissionMessageDialog();
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
-                        REQUEST_RECORD_AUDIO_PERMISSION);
-            }
-
-            Toast.makeText(MainActivity.this,"Stop listening!",Toast.LENGTH_LONG).show();
-            // Stop listening to voice
-            stopVoiceRecorder();
-            Toast.makeText(MainActivity.this,"dừng nghe",Toast.LENGTH_SHORT).show();
-            if (mAdapter != null) {
-                intent.putExtra(STATE_RESULTS,mAdapter.getResults());
-                intent.putStringArrayListExtra(STATE_RESULTS, mAdapter.getResults());
-            }
-            else
-            {
-                results = intent==null ? null: intent.getStringArrayListExtra(STATE_RESULTS);
-                mAdapter= new ResultAdapter(results);
-                mAdapter.addResult(results.toString());
-
-            }
-
-
-            Toast.makeText(MainActivity.this,"Lấy được results: "+results,Toast.LENGTH_SHORT).show();
-
-
-
-            edtText.setText(mAdapter.getResults().toString());
-            // Stop Cloud Speech API
-            mSpeechService.removeListener(mSpeechServiceListener);
-            unbindService(mServiceConnection);
-            mSpeechService = null;
-            Toast.makeText(MainActivity.this,"Hủy kết nối",Toast.LENGTH_SHORT).show();
-
-        }
-        catch (Exception ex)
-        {
-            //Toast.makeText(MainActivity.this,"Error!",Toast.LENGTH_LONG).show();
-        }
-
-
-
-    }
-    private void addControls() {
-        imgSpeech= findViewById(R.id.imgSpeech);
-        edtText= findViewById(R.id.edtText);
-    }
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        addControls();
-        addEvents();
     }
 }

@@ -22,11 +22,11 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/imgSpeech"
+    <Button
+        android:id="@+id/btnChayj"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        app:srcCompat="@android:drawable/ic_btn_speak_now" />
+        android:layout_height="wrap_content"
+        android:text="Bắt đầu" />
 
     <EditText
         android:id="@+id/edtText"
